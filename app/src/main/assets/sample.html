@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="ko">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+	<title>Hello! Mobile!!</title>
+</head>
+
+<body>
+	<h1>브릿지 테스트 페이지</h1>
+	<button id="btnTestBridge">브릿지 테스트</button><br/><br/>
+	<button id="btnAppversion">앱버전</button><br/><br/>
+	<button id="showToast">토스트</button><br/><br/>
+	<button id="rxTest">Rxbus 테스트</button><br/><br/>
+	<button id="createUser">SampleApiTest (createUser)</button><br/><br/>
+	<button id="doGetListResources">SampleApiTest (doGetListResources)</button><br/><br/>
+	<button id="doGetUserList">SampleApiTest (doGetUserList)</button><br/><br/>
+	<button id="doGetUserListForJsonObject">SampleApiTest (doGetUserListForJsonObject)</button><br/><br/>
+	<button id="doCreateUserWithField">SampleApiTest (doCreateUserWithField)</button><br/><br/>
+</body>
+
+<script type="text/javascript">
+window.onload = function(e) {
+  document.getElementById('btnTestBridge').onclick = function(event){
+           nativeCall("sample.test",{"msg" : "test"}, 'bridgeTestCallback');
+    }
+
+	document.getElementById('showToast').onclick = function(event){
+           nativeCall('nativeSystem.showToast',{"message" : "토스트 브릿지 테스트"});
+    }
+
+    document.getElementById('btnAppversion').onclick = function(event){
+           var appVersion = nativeCall('nativeSystem.appVersion');
+           alert(appVersion);
+    }
+
+    document.getElementById('rxTest').onclick = function(event){
+           nativeCall('sample.rxTest');
+    }
+
+	document.getElementById('createUser').onclick = function(event){
+           nativeCall('ApiSample.createUser');
+    }
+	document.getElementById('doGetListResources').onclick = function(event){
+           nativeCall('ApiSample.doGetListResources');
+    }
+    document.getElementById('doGetUserList').onclick = function(event){
+    		var param = { 'page' : '1' }
+           nativeCall('ApiSample.doGetUserList',param);
+    }
+    document.getElementById('doGetUserListForJsonObject').onclick = function(event){
+    		var param = { 'page' : '1' }
+           nativeCall('ApiSample.doGetUserListForJsonObject',param);
+    }
+    document.getElementById('doCreateUserWithField').onclick = function(event){
+    		var param = { 'name' : 'testUser', 'job' : 'testJob' }
+           nativeCall('ApiSample.doCreateUserWithField',param);
+    }
+}
+
+
+var bridgeTestCallback = function(res) {
+    var result = JSON.parse(res);
+    console.log(result);
+    alert(result.message);
+}
+
+var nativeCall = function(bridgeInfo, param, callback){
+	var bridgeInfoArr = bridgeInfo.split(".");
+
+	if (!!!param) param = new Object();
+
+	var bridgeParam = { 'group' : bridgeInfoArr[0],
+    'function' : bridgeInfoArr[1],
+    'callback' : callback,
+    'args' : param }
+
+	return androidWebBridge.postMessage(JSON.stringify(bridgeParam));
+}
+
+
+
+</script>
+
+</html>
